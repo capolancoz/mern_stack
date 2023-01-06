@@ -1,7 +1,8 @@
+const clienteController = {}
 const Clientes = require('../models/Clientes');
 
 // Agregar un nuevo cliente
-exports.nuevoCliente = async (req, res, next) => {
+clienteController.nuevoCliente = async (req, res, next) => {
   const cliente = new Clientes(req.body);
   
   try {
@@ -16,7 +17,7 @@ exports.nuevoCliente = async (req, res, next) => {
 }
 
 // Muestra todos los clientes
-exports.mostrarClientes = async (req, res, next) => {
+clienteController.mostrarClientes = async (req, res, next) => {
   try {
     const clientes = await Clientes.find({});
     res.json(clientes)
@@ -27,7 +28,7 @@ exports.mostrarClientes = async (req, res, next) => {
 }
 
 // Muestra un cliente por ID
-exports.mostrarCliente = async (req, res, next) => {
+clienteController.mostrarCliente = async (req, res, next) => {
   const cliente = await Clientes.findById(req.params.idCliente);
 
   if(!cliente) {
@@ -41,7 +42,7 @@ exports.mostrarCliente = async (req, res, next) => {
 }
 
 // Actualiza un cliente por su ID
-exports.actualizarCliente = async (req, res, next) => {
+clienteController.actualizarCliente = async (req, res, next) => {
   try {
     const cliente = await Clientes.findOneAndUpdate({_id: req.params.idCliente}, req.body, {
       new: true
@@ -54,7 +55,7 @@ exports.actualizarCliente = async (req, res, next) => {
 }
 
 // Elimina un cliente por su ID
-exports.eliminarCliente = async (req, res, next) => {
+clienteController.eliminarCliente = async (req, res, next) => {
   try {
     await Clientes.findOneAndDelete({_id: req.params.idCliente});
     res.json({mensaje: 'El cliente fue eliminado'})
@@ -63,3 +64,5 @@ exports.eliminarCliente = async (req, res, next) => {
     next();
   }
 }
+
+module.exports = clienteController;

@@ -1,6 +1,7 @@
+const pedidosController = {}
 const Pedidos = require('../models/Pedidos')
 
-exports.nuevoPedido = async (req, res, next) => {
+pedidosController.nuevoPedido = async (req, res, next) => {
   const pedido = new Pedidos(req.body);
   try {
     await pedido.save();
@@ -12,7 +13,7 @@ exports.nuevoPedido = async (req, res, next) => {
 }
 
 // Muestra los pedidos
-exports.mostrarPedidos = async (req, res, next) => {
+pedidosController.mostrarPedidos = async (req, res, next) => {
   try {
     const pedidos = await Pedidos.find({}).populate('cliente').populate({
       path: 'pedido.producto',
@@ -26,7 +27,7 @@ exports.mostrarPedidos = async (req, res, next) => {
 }
 
 // Muestra un pedido por su ID
-exports.mostrarPedido = async (req, res, next) => {
+pedidosController.mostrarPedido = async (req, res, next) => {
   const pedido = await Pedidos.findById(req.params.idPedido).populate('cliente').populate({
     path: 'pedido.producto',
     model: 'Productos'
@@ -42,7 +43,7 @@ exports.mostrarPedido = async (req, res, next) => {
 }
 
 // Actualizar el pedido
-exports.actualizarPedido = async (req, res, next) => {
+pedidosController.actualizarPedido = async (req, res, next) => {
   try {
     let pedido = await Pedidos.findOneAndUpdate({_id : req.params.idPedido}, req.body, {
       new: true
@@ -60,7 +61,7 @@ exports.actualizarPedido = async (req, res, next) => {
 }
 
 // Eliminar un pedido por su ID
-exports.eliminarPedido = async (req, res, next) => {
+pedidosController.eliminarPedido = async (req, res, next) => {
   try {
     await Pedidos.findOneAndDelete({_id: req.params.idPedido});
     res.json({mensaje: 'El pedido fue eliminado'})
@@ -69,3 +70,6 @@ exports.eliminarPedido = async (req, res, next) => {
     next();
   }
 }
+
+
+module.exports = pedidosController;

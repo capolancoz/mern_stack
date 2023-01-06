@@ -1,3 +1,5 @@
+const productosController = {}
+
 const Productos = require('../models/Productos');
 
 const multer = require('multer');
@@ -27,7 +29,7 @@ const configuracionMulter = {
 const upload = multer(configuracionMulter).single('imagen');
 
 // Sube un archivo
-exports.subirArchivo = async (req, res, next) => {
+productosController.subirArchivo = async (req, res, next) => {
   await upload(req, res, function(error) {
     if(error) {
       res.json({mensaje: error})
@@ -40,7 +42,7 @@ exports.subirArchivo = async (req, res, next) => {
 
 
 // Agrega nuevo producto
-exports.nuevoProducto = async (req, res, next) => {
+productosController.nuevoProducto = async (req, res, next) => {
   const producto = new Productos(req.body);
 
   try {
@@ -57,7 +59,7 @@ exports.nuevoProducto = async (req, res, next) => {
 
 
 // Muestra todos los productos
-exports.mostrarProductos = async (req, res, next) => {
+productosController.mostrarProductos = async (req, res, next) => {
   try {
     // Obtener todos los productos
     const productos = await Productos.find({});
@@ -69,7 +71,7 @@ exports.mostrarProductos = async (req, res, next) => {
 }
 
 // Muestra un producto en espeficico
-exports.mostrarProducto = async (req, res, next) => {
+productosController.mostrarProducto = async (req, res, next) => {
   const producto = await Productos.findById(req.params.idProducto);
 
   if(!producto) {
@@ -85,7 +87,7 @@ exports.mostrarProducto = async (req, res, next) => {
 }
 
 // Actualiza un producto via ID
-exports.actualizarProducto = async (req, res, next) => {
+productosController.actualizarProducto = async (req, res, next) => {
   try {
 
     // Construir nuevo producto
@@ -112,7 +114,7 @@ exports.actualizarProducto = async (req, res, next) => {
 }
 
 // Eliminar un producto via ID
-exports.eliminarProducto = async (req, res, next) => {
+productosController.eliminarProducto = async (req, res, next) => {
   try {
     await Productos.findByIdAndDelete({_id: req.params.idProducto});
     res.json({mensaje: 'El producto se ha eliminado'})
@@ -122,7 +124,7 @@ exports.eliminarProducto = async (req, res, next) => {
   }
 }
 
-exports.buscarProducto = async (req, res, next) => {
+productosController.buscarProducto = async (req, res, next) => {
   try {
     // Obtener el query
     const { query } = req.params;
@@ -139,3 +141,5 @@ exports.buscarProducto = async (req, res, next) => {
     next();
   }
 }
+
+module.exports = productosController;
