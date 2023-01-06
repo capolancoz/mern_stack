@@ -29,6 +29,8 @@ app.set('port',config.port);
 app.use('/', require('./routes/clienteRoutes'));
 app.use('/pedidos', require('./routes/pedidosRoutes'));
 app.use('/productos', require('./routes/productosRoutes'));
+app.use('/users', require('./routes/usuariosRoutes'));
+
 
 
 
