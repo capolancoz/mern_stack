@@ -9,4 +9,5 @@ router.route('/')
 router.route('/auth')
     .post(auth)
 
+
 module.exports = router;

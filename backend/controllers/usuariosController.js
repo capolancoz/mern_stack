@@ -1,64 +1,58 @@
 const usuariosController = {}
 
 const bcrypt = require('bcryptjs');
-const userModel = require('../models/user.model');
+const Usuarios = require('../models/Usuarios');
 
 const jwt = require('jsonwebtoken');
 
 usuariosController.create = async (req,res)=>{
-    try{
-        const hash = await bcrypt.hash(req.body.userPassword,10);
-        req.body.userPassword = hash
-        const newUser = new userModel(req.body)
-        await newUser.save();
-        res.json({
-            success:true,
-            message:'user added successfully',
-            content:newUser
-        })
-    }catch(error){
-        res.status(502).json({
-            success:false,
-            message:'Error by registering a new user',
-            content:error
-        })
-    }
+    // Leer los datos del usuario y colocarlos en usuarios
+  const usuario = new Usuarios(req.body);
+  usuario.password = await bcrypt.hash(req.body.password, 12);
+  try {
+    await usuario.save();
+    res.json({
+      success:true,
+      message : 'Usuario creado correctamente',
+      content: usuario
+    });
+  } catch (error) {
+    res.status(502).json(
+      {
+        success:false,
+        message:'Error registrando al usuario',
+        content: error
+      }
+    )
+  }
 }
 
 usuariosController.auth = async (req,res)=>{
-    try{
-        userName = req.body.userName;
-        userPassword = req.body.userPassword;
-        console.log("usuario : ",userName);
-        console.log("password: ",userPassword);
-        const userAuth = await userModel.findOne({userName:userName})
-        console.log("usuario encontrado : ",userAuth)
-        console.log("password : ",userAuth.userPassword)
-        if(await bcrypt.compare(userPassword,userAuth.userPassword)){
-            //generamos el token
-            const token = jwt.sign({
-                userName: userAuth.userName
-              }, 'qwerty123', { expiresIn: '1h' });
+    //buscar el usuario
+  const {email, password} = req.body;
+  const usuario = await Usuarios.findOne({ email });
+  if(!usuario){
+    //Si el usuario noexiste
+    await res.status(401).json({mensaje: 'Ese usuario no existe'});
+    next();
+  } else{
+    //El usuario existe, verificar si la contraseña es correcta
+    if(!bcrypt.compareSync( password, usuario.password )) {
+      //si la contraseña es incorrecta
+      await res.status(401).json({mensaje: 'Contraseña incorrecta'});
+      next();
+    } else{
+      // contraseña correcta, firmar el token
+      const token = jwt.sign({
+        email: usuario.email,
+        nombre: usuario.nombre,
+        _id: usuario._id
+      }, 'SECRETKEY', { expiresIn: '1h'});
 
-            res.status(200).json({
-                success:true,
-                message:'User Authenticated',
-                content:token
-            })
-        }else{
-            res.status(404).json({
-                success:false,
-                message:'Invalid User or Password'
-            }) 
-        }
-    }catch(error){
-        console.log("error :",error)
-        res.status(502).json({
-            success:false,
-            message:'Error by auth a user',
-            content:error
-        })
+      //retornar el token
+      res.json({ token });
     }
+  }
 }
 
 module.exports = usuariosController;
