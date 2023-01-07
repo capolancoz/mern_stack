@@ -1,30 +1,50 @@
-import React, { useEffect, useState, Fragment } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState, Fragment, useContext } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import clienteAxios from '../../config/axios';
 import Spinner from '../layout/Spinner';
 import Producto from './Producto';
-
+import { CRMContext } from "../../context/CRMContext";
 function Productos() {
-
+  let navigate = useNavigate();
   // productos = state, guardarproductos = funcion para guardar el state
   const [productos, guardarProductos] = useState([]);
 
+  //utilizar context
+  const [auth, guardarAuth] = useContext(CRMContext);
 
   // useEffect para consultar API
-  useEffect( () => {
+  useEffect(() => {
+    if (auth.token !== '') {
+      // Query API
+      const consultarAPI = async () => {
+        try {
+          const productosConsulta = await clienteAxios.get('/productos', {
+            headers: {
+              Authorization: `Bearer ${auth.token}`
+            }
+          });
+          guardarProductos(productosConsulta.data);
+        } catch (error) {
+          if(error.response.status = 500){
+            navigate('/iniciar-sesion', {replace:true});
+          }
+        }
+      }
 
-    // Query API
-    const consultarAPI = async () => {
-      const productosConsulta = await clienteAxios.get('/productos');
-      guardarProductos(productosConsulta.data);
+      // LLamar a la API
+      consultarAPI();
+    } else {
+      navigate('/iniciar-sesion', { replace: true });
     }
+  }, [productos]);
 
-    // LLamar a la API
-    consultarAPI();
-  }, [productos]); 
+  //Si el state está como false
+  if(!auth.auth){
+    navigate('/iniciar-sesion', {replace:true});
+  }
 
   // Spiner de carga
-  if(!productos.length) return <Spinner/>
+  if (!productos.length) return <Spinner />
 
   return (
     <Fragment>

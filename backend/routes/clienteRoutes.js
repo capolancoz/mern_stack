@@ -3,11 +3,14 @@ const router = Router();
 
 const {nuevoCliente, mostrarClientes ,mostrarCliente, actualizarCliente, eliminarCliente} = require('../controllers/clienteController');
 
+//proteger rutas
+const {verifyToken} = require('../middlewares/auth.handler');
+
 router.route('/clientes')
   // Agrega nuevos clientes via POST
-  .post(nuevoCliente)
+  .post(verifyToken, nuevoCliente)
   // Obtener todos los clientes
-  .get(mostrarClientes)
+  .get(verifyToken, mostrarClientes)
 
 router.route('/clientes/:idCliente')
   // Muestra un cliente

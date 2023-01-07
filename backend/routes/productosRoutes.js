@@ -3,11 +3,13 @@ const router = Router();
 
 const {subirArchivo, nuevoProducto ,mostrarProductos, mostrarProducto, actualizarProducto, eliminarProducto, buscarProducto} = require('../controllers/productosController');
 
+const {verifyToken} = require('../middlewares/auth.handler');
+
 router.route('/')
   // Mostrar pedidos
   .post(subirArchivo)
   .post(nuevoProducto)
-  .get(mostrarProductos)
+  .get(verifyToken, mostrarProductos)
 
 router.route('/:idProducto')
   // Mostrar pedidos por su ID

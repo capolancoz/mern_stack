@@ -1,12 +1,13 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useContext, useEffect, useState } from "react";
 import clienteAxios from "../../config/axios";
 import Swal from 'sweetalert2'
 import {useNavigate, useParams} from 'react-router-dom';
+import { CRMContext } from "../../context/CRMContext";
 
 function EditarCliente() {
 
   let navigate = useNavigate();
-
+  const [auth, guardarAuth] = useContext(CRMContext);
   // Obtener el ID
   const { id } = useParams();
 
@@ -21,7 +22,11 @@ function EditarCliente() {
 
   // Query a la API
   const consultarAPI = async () => {
-    const clienteConsulta = await clienteAxios.get(`/clientes/${id}`);
+    const clienteConsulta = await clienteAxios.get(`/clientes/${id}`, {
+      headers: {
+        Authorization: `Bearer ${auth.token}`
+      }
+    })
     
     // Colocar en el state
     datosCliente(clienteConsulta.data);
@@ -48,7 +53,11 @@ function EditarCliente() {
     e.preventDefault();
 
     // Enviar petición por axios
-    clienteAxios.put(`/clientes/${cliente._id}`, cliente)
+    clienteAxios.put(`/clientes/${cliente._id}`, cliente, {
+      headers: {
+        Authorization: `Bearer ${auth.token}`
+      }
+    })
       .then(res => {
         // Validar errores en MongoDB
         if(res.data.code === 11000) {
@@ -78,6 +87,11 @@ function EditarCliente() {
     // Return true or false
     return valido;
   }
+
+  //verificar si el usuario esta autenticado
+  if(!auth.auth && (localStorage.getItem('token') === auth.token)){
+    return null
+  };
 
   return (
     <Fragment>

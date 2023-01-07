@@ -3,8 +3,10 @@ const router = Router();
 
 const {create,auth} = require('../controllers/usuariosController');
 
+const {verifyToken} = require('../middlewares/auth.handler');
+
 router.route('/')
-    .post(create)
+    .post(verifyToken, create)
 
 router.route('/auth')
     .post(auth)

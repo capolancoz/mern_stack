@@ -3,6 +3,9 @@ const router = Router();
 
 const {nuevoPedido, mostrarPedidos ,mostrarPedido, actualizarPedido, eliminarPedido} = require('../controllers/pedidosController');
 
+//proteger rutas
+const {verifyToken} = require('../middlewares/auth.handler');
+
 router.route('/')
   // Mostrar pedidos
   .get(mostrarPedidos)

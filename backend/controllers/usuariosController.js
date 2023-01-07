@@ -27,7 +27,7 @@ usuariosController.create = async (req,res)=>{
   }
 }
 
-usuariosController.auth = async (req,res)=>{
+usuariosController.auth = async (req,res,next)=>{
     //buscar el usuario
   const {email, password} = req.body;
   const usuario = await Usuarios.findOne({ email });

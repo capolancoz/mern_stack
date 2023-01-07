@@ -1,10 +1,16 @@
 const express = require('express');
 const {config} = require('./config');
-
+const session = require('express-session')
 
 // Crear el servidor
 const app = express();
 
+app.use(session({
+    secret: 'somethingsecretgoeshere',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: true }
+ }));
 
 
 // Cors permite que un cliente se conecte a otro servidor para el intercambio de recursos
@@ -24,6 +30,8 @@ app.use(express.static('uploads'));
 
 
 app.set('port',config.port);
+
+
 
 //Rutas de la app
 app.use('/', require('./routes/clienteRoutes'));
